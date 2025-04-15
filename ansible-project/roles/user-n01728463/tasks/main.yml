@@ -1,0 +1,46 @@
+# tasks file for the role user-n01728463
+- name: Create Groups
+  group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ groups }}"
+
+- name: Create users and added them to the groups
+  user:
+    name: "{{ item.name }}"
+    groups: "{{ groups | join(',') }}"
+    append: yes
+    shell: /bin/bash
+    state: present
+  loop: "{{ users }}"
+
+- name: Create .ssh directory for each user
+  file:
+    path: "/home/{{ item.name }}/.ssh"
+    state: directory
+    mode: '0700'
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+  loop: "{{ users }}"
+
+- name: Generate SSH key pair for each user
+  openssh_keypair:
+    path: "/home/{{ item.name }}/.ssh/id_rsa"
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: '0600'
+    type: rsa
+    size: 2048
+    force: no
+  loop: "{{ users }}"
+
+- name: Ensure authorized_keys contains the public key
+  copy:
+    src: "/home/{{ item.name }}/.ssh/id_rsa.pub"
+    dest: "/home/{{ item.name }}/.ssh/authorized_keys"
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: '0600'
+    remote_src: yes
+  loop: "{{ users }}"
+
