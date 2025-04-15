@@ -1,0 +1,9 @@
+- name: Ansible Project Playbook
+  hosts: linux
+  become: yes
+  roles:
+    - profile-n01728463
+    - user-n01728463
+    - datadisk-n01728463
+    - webserver-n01728463
+

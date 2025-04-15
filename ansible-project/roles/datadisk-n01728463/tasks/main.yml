@@ -1,2 +1,47 @@
----
-# tasks file for datadisk-n01728463
+- name: Partition the disk
+  parted:
+    device: /dev/sdc
+    number: "{{ item.number }}"
+    part_start: "{{ item.start }}"
+    part_end: "{{ item.end }}"
+    part_type: primary
+    fs_type: "{{ item.fs }}"
+    state: present
+  loop:
+    - { number: 1, fs: xfs, start: '1MiB', end: '4096MiB' }
+    - { number: 2, fs: ext4, start: '4097MiB', end: '9216MiB' }
+
+- name: Format /dev/sdc1 with XFS
+  filesystem:
+    fstype: xfs
+    dev: /dev/sdc1
+
+- name: Format /dev/sdc2 with EXT4
+  filesystem:
+    fstype: ext4
+    dev: /dev/sdc2
+
+- name: Create mount points
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /part1
+    - /part2
+
+- name: Mount /dev/sdc1
+  mount:
+    path: /part1
+    src: /dev/sdc1
+    fstype: xfs
+    opts: defaults
+    state: mounted
+
+- name: Mount /dev/sdc2
+  mount:
+    path: /part2
+    src: /dev/sdc2
+    fstype: ext4
+    opts: defaults
+    state: mounted
+

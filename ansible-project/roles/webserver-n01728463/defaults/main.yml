@@ -1,2 +1,6 @@
----
-# defaults file for webserver-n01728463
+apache_service: httpd
+fqdn_file_map:
+  - { fqdn: "ansible-c-vm1.canadacentral.cloudapp.azure.com", file: "vm1.html" }
+  - { fqdn: "ansible-c-vm2.canadacentral.cloudapp.azure.com", file: "vm2.html" }
+  - { fqdn: "ansible-c-vm3.canadacentral.cloudapp.azure.com", file: "vm3.html" }
+

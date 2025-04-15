@@ -1,2 +1,7 @@
----
 # handlers file for webserver-n01728463
+---
+- name: restart_apache
+  service:
+    name: httpd
+    state: restarted
+

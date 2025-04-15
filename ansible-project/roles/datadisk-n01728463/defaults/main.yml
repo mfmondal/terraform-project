@@ -1,2 +1,5 @@
----
-# defaults file for datadisk-n01728463
+#disk_device: "/dev/sdc"
+#partitions:
+#  - { name: "part1", size: "4GiB", fstype: "xfs", mountpoint: "/part1" }
+#  - { name: "part2", size: "5GiB", fstype: "ext4", mountpoint: "/part2" }
+

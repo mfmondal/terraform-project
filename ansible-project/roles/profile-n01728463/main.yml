@@ -1,0 +1,9 @@
+- name: Add timeout to /etc/profile
+  blockinfile:
+    path: /etc/profile
+    insertafter: EiOF
+    state: present
+    block: |
+      # Test block added by Ansibl ... Md Foyzer Rahman Mondal
+      export TMOUT=1500
+

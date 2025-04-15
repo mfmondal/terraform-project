@@ -1,14 +1,13 @@
-# tasks file for the role user-n01728463
+ # Tasks file for the role user-n01728463
 - name: Create Groups
   group:
-    name: "{{ item }}"
+    name: "{{ group }}"
     state: present
-  loop: "{{ groups }}"
 
 - name: Create users and added them to the groups
   user:
-    name: "{{ item.name }}"
-    groups: "{{ groups | join(',') }}"
+    name: "{{ item }}"
+    groups: "{{ group }},wheel"
     append: yes
     shell: /bin/bash
     state: present
@@ -16,18 +15,18 @@
 
 - name: Create .ssh directory for each user
   file:
-    path: "/home/{{ item.name }}/.ssh"
+    path: "/home/{{ item }}/.ssh"
     state: directory
     mode: '0700'
-    owner: "{{ item.name }}"
-    group: "{{ item.name }}"
+    owner: "{{ item }}"
+    group: "{{ item }}"
   loop: "{{ users }}"
 
 - name: Generate SSH key pair for each user
   openssh_keypair:
-    path: "/home/{{ item.name }}/.ssh/id_rsa"
-    owner: "{{ item.name }}"
-    group: "{{ item.name }}"
+    path: "/home/{{ item }}/.ssh/id_rsa"
+    owner: "{{ item }}"
+    group: "{{ item }}"
     mode: '0600'
     type: rsa
     size: 2048
@@ -36,11 +35,18 @@
 
 - name: Ensure authorized_keys contains the public key
   copy:
-    src: "/home/{{ item.name }}/.ssh/id_rsa.pub"
-    dest: "/home/{{ item.name }}/.ssh/authorized_keys"
-    owner: "{{ item.name }}"
-    group: "{{ item.name }}"
+    src: "/home/{{ item }}/.ssh/id_rsa.pub"
+    dest: "/home/{{ item }}/.ssh/authorized_keys"
+    owner: "{{ item }}"
+    group: "{{ item }}"
     mode: '0600'
     remote_src: yes
   loop: "{{ users }}"
-
+  
+  
+- name: Download user100's private SSH key from VM1 to local machine
+  ansible.builtin.fetch:
+    src: "/home/user100/.ssh/id_rsa"
+    dest: "./user100_id_rsa"
+    flat: yes
+  when: ansible_hostname == "ansible-c-vm1.canadacentral.cloudapp.azure.com"

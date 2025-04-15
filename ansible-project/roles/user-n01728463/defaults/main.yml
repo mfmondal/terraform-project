@@ -1,11 +1,7 @@
 # defaults file for user-n01728463
-
 users:
-  - name: user100
-  - name: user200
-  - name: user300
-
-groups:
-  - cloudadmins
-  - wheel
+  - user100
+  - user200
+  - user300
+group: cloudadmins
 

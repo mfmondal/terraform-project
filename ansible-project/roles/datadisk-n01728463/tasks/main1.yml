@@ -1,0 +1,44 @@
+# tasks file for datadisk-n01728463
+---
+- name: Create partitions
+  parted:
+    device: "{{ disk_device }}"
+    number: "{{ item.number }}"
+    state: present
+    part_type: primary
+    fs_type: "{{ item.fs_type }}"
+    resize: yes
+    size: "{{ item.size }}"
+  loop:
+    - { number: 1, fs_type: xfs,  size: "{{ part1_size }}" }
+    - { number: 2, fs_type: ext4, size: "{{ part2_size }}" }
+
+- name: Create filesystems
+  filesystem:
+    fstype: "{{ item.fstype }}"
+    dev: "{{ disk_device }}{{ item.suffix }}"
+  loop:
+    - { fstype: xfs,  suffix: '1' }
+    - { fstype: ext4, suffix: '2' }
+
+- name: Create mount points
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /part1
+    - /part2
+
+- name: Mount and persist partitions
+  mount:
+    path: "{{ item.path }}"
+    src: "{{ disk_device }}{{ item.suffix }}"
+    fstype: "{{ item.fstype }}"
+    state: mounted
+    opts: defaults
+    dump: 0
+    passno: 0
+  loop:
+    - { path: /part1, suffix: '1', fstype: xfs }
+    - { path: /part2, suffix: '2', fstype: ext4 }
+
