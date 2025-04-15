@@ -4,6 +4,7 @@ resource "null_resource" "linux_provisioner" {
   for_each   = azurerm_linux_virtual_machine.vmlinux
   depends_on = [azurerm_linux_virtual_machine.vmlinux]
 
+
   provisioner "remote-exec" {
     inline = ["/bin/hostname"]
 
@@ -16,5 +17,9 @@ resource "null_resource" "linux_provisioner" {
       host = azurerm_linux_virtual_machine.vmlinux[each.key].public_ip_address
     }
   }
-}
 
+  provisioner "local-exec" {
+    command = "ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i /home/n01728463/automation/ansible//hosts /home/n01728463/automation/ansible/n01728463-playbook.yml"
+  }
+
+}
